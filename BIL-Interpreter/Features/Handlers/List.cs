@@ -66,6 +66,16 @@ internal static class List
         return realList[indexInt];
     }
 
+    internal static void Add(object list, object element)
+    {
+        if (!list.IsGenericIEnumerable())
+            throw new BadArgumentTypeException();
+
+        List<object> realList = list.ConvertToListOfObject();
+
+        realList.Add(element);
+    }
+
     internal static void Insert(object list, object index, object element)
     {
         int indexInt = Convert.ToInt32(index);

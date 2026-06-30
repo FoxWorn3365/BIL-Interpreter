@@ -49,8 +49,12 @@ internal static class Executor
                 continue;
             
             environment.Environment.Logger?.Debug($"Invoking method {method.Name} with {args.Length} arguments and pushing it's return value inside the stack");
-                
-            environment.Stack.Enqueue(method.Invoke(obj, args));
+
+            object result = method.Invoke(obj, args);
+            
+            if (method.ReturnType != typeof(void))
+                environment.Stack.Enqueue(result);
+            
             return true;
         }
 
