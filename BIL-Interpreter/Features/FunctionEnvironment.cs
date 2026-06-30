@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BIL_Interpreter.Enums;
 using BIL_Interpreter.Features.Operators;
@@ -61,7 +62,14 @@ public abstract class FunctionEnvironment(string name, ProgramEnvironment progra
         for (CursorPosition = 0; CursorPosition < Instructions.Count; CursorPosition++)
         {
             Environment.Logger?.Debug($"Executing instruction {Instructions[CursorPosition]} (CursorPosition: {CursorPosition})");
-            Instructions[CursorPosition].Evaluate();
+            try
+            {
+                Instructions[CursorPosition].Evaluate();
+            }
+            catch (Exception e)
+            {
+                Environment.Logger?.Error($"Error executing instruction {Instructions[CursorPosition]}: {e}");
+            }
         }
         
         Environment.Logger?.Debug($"Finished executing function {Name}");

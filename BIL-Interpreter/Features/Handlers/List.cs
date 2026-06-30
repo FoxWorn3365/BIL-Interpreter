@@ -1,14 +1,18 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using BIL_Interpreter.Attributes;
 using BIL_Interpreter.Exceptions;
 using BIL_Interpreter.Extensions;
+using BIL_Interpreter.Helpers;
 
 namespace BIL_Interpreter.Features.Handlers;
 
 [LanguageSpecialHandler]
 internal static class List
 {
+    internal static readonly HashSet<object> InternalLists = [];
+    
     private static readonly Random SystemRandom = new();
     
     internal static List<object> Create(params object[] args)
@@ -17,6 +21,8 @@ internal static class List
         
         foreach (object arg in args)
             list.Add(arg);
+        
+        InternalLists.Add(list);
         
         return list;
     }
@@ -71,44 +77,51 @@ internal static class List
         if (!list.IsGenericIEnumerable())
             throw new BadArgumentTypeException();
 
+        if (!list.TryAddSequential(element))
+            throw new BadCollectionException(list?.GetType());
+    }
+    
+    internal static int Count(object list)
+    {
+        if (!list.IsGenericIEnumerable())
+            throw new BadArgumentTypeException();
+
         List<object> realList = list.ConvertToListOfObject();
 
-        realList.Add(element);
+        return realList.Count;
     }
 
     internal static void Insert(object list, object index, object element)
     {
-        int indexInt = Convert.ToInt32(index);
-        
         if (!list.IsGenericIEnumerable())
             throw new BadArgumentTypeException();
 
-        List<object> realList = list.ConvertToListOfObject();
-
-        realList.Insert(indexInt, element);
+        try
+        {
+            if (list is IList genericList)
+                genericList.Insert(Convert.ToInt32(index), element);
+        }
+        catch (Exception e)
+        {
+            Logger.Instance.Error(e.ToString());
+        }
     }
 
     internal static void Remove(object list, object index)
     {
-        int indexInt = Convert.ToInt32(index);
-        
         if (!list.IsGenericIEnumerable())
             throw new BadArgumentTypeException();
         
-        List<object> realList = list.ConvertToListOfObject();
-        
-        realList.RemoveAt(indexInt);
+        if (!list.TryRemoveAtSequential(index))
+            throw new BadCollectionException(list?.GetType());
     }
     
     internal static void Replace(object list, object index, object element)
     {
-        int indexInt = Convert.ToInt32(index);
-        
         if (!list.IsGenericIEnumerable())
             throw new BadArgumentTypeException();
         
-        List<object> realList = list.ConvertToListOfObject();
-        
-        realList[indexInt] = element;
+        if (!list.TrySetSequential(index, element))
+            throw new BadCollectionException(list?.GetType());
     }
 }

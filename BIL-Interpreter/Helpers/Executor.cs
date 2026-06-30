@@ -273,6 +273,13 @@ internal static class Executor
                 continue;
             }
 
+            if (parameter.ParameterType.IsGenericIEnumerable() && obj is List<object> internalList && List.InternalLists.Contains(internalList))
+            {
+                // If it's a list handled by us then it can be really anything
+                args[i] = internalList.CastLocalListToType(parameter.ParameterType.GetInterfaces().FirstOrDefault(interf => interf.IsGenericType && interf.GetGenericTypeDefinition() == typeof(IEnumerable<>))?.GetGenericArguments()[0]);
+                continue;
+            }
+
             if (parameter.ParameterType != obj.GetType() && !parameter.ParameterType.IsConvertibleTo(obj.GetType()))
                 return false;
             

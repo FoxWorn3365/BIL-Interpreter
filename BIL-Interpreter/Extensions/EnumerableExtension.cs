@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BIL_Interpreter.Exceptions;
+using BIL_Interpreter.Helpers;
 
 namespace BIL_Interpreter.Extensions;
 
@@ -49,7 +51,19 @@ public static class EnumerableExtension
         var collezioneClassica = (System.Collections.IEnumerable)obj;
 
         risultato.AddRange(collezioneClassica.Cast<object>());
-
+        
         return risultato;
+    }
+
+    public static object CastLocalListToType(this List<object> list, Type type)
+    {
+        Type genericListType = typeof(List<>).MakeGenericType(type);
+        
+        IList concreteList = (IList)Activator.CreateInstance(genericListType);
+        
+        foreach (var item in list)
+            concreteList.Add(Converter.TryConvert(item, type));
+
+        return concreteList;
     }
 }
