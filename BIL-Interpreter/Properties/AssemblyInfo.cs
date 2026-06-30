@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("UncomplicatedCustomServer Collective")]
 [assembly: AssemblyProduct("BIL_Interpreter")]
-[assembly: AssemblyCopyright("Copyright © UncomplicatedCustomServer Collective 2026")]
+[assembly: AssemblyCopyright("Copyright © FoxWorn3365 & UncomplicatedCustomServer Collective")]
 [assembly: AssemblyTrademark("(C) 2026-now")]
 [assembly: AssemblyCulture("")]
 

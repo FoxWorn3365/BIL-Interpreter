@@ -5,9 +5,17 @@ using BIL_Interpreter.Features;
 
 namespace BIL_Interpreter.Helpers;
 
-internal class Logger(ProgramEnvironment environment = null)
+public class Logger(ProgramEnvironment environment = null)
 {
+    /// <summary>
+    /// Gets the global <see cref="Logger"/> instance
+    /// </summary>
     public static Logger Instance { get; } = new();
+
+    /// <summary>
+    /// Gets or sets whether the debug should be enabled or not
+    /// </summary>
+    public static bool EnableDebug { get; set; } = false;
     
     private static readonly string GlobalFilePath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile), ".exec_logs.txt");
 
@@ -51,7 +59,10 @@ internal class Logger(ProgramEnvironment environment = null)
 
     public void Debug(string message)
     {
-        if (Environment.Debug)
+        if (Environment is not null && Environment.Debug)
+            Log("DEBUG", message);
+        
+        if (Environment is null && EnableDebug)
             Log("DEBUG", message);
     }
 }
